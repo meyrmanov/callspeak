@@ -36,6 +36,13 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.0</version>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>com.noveogroup.callspeak.CallsPeakApp</mainClass>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 

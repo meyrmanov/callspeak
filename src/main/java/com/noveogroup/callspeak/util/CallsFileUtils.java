@@ -29,10 +29,10 @@ public final class CallsFileUtils {
         try (Stream<Interval> stream = Files.lines(Paths.get(fileName)).map(CallsFileUtils::parseLine)) {
             stream.forEach(function);
         } catch (IOException e) {
-            LOGGER.error("Couldn't read from file!", e);
+            LOGGER.error("Couldn't read from file!");
             throw new CallsFileException();
         } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
-            LOGGER.error("File format is not correct!", e);
+            LOGGER.error("File format is not correct!");
             throw new CallsFileException();
         }
     }

@@ -31,8 +31,6 @@ public final class CallsPeakApp {
         }
         INTERSECTION_SERVICE.finish();
         OUTPUT_SERVICE.print(INTERSECTION_SERVICE.getPeaks(), INTERSECTION_SERVICE.getPeakAmount());
-
-        // todo maven & readme
     }
 
     private CallsPeakApp() {
