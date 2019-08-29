@@ -43,21 +43,18 @@ public class IntersectionServiceImpl implements IntersectionService {
                     iterator.remove(); // remove interval as it will not have any intersections anymore
                 }
             }
-        }
-        if (current.isEmpty()) {
-            current.add(interval);
         } else {
-            if (diff == null) { // if no right part is calculated, this means new interval ends after all
-                diff = interval.rightDiff(maxEndSecond.get()); // create new interval from previous max end to this end
-            }
-            if (diff != null) {
-                current.add(diff);
-            }
+            current.add(interval);
         }
 
-        if (maxEndSecond.get() < interval.getEnd()) { // update max end
-            maxEndSecond.set(interval.getEnd());
+        if (diff == null) { // if no right part is calculated, this means new interval ends after all
+            diff = interval.rightDiff(maxEndSecond.get()); // create new interval from previous max end to this end
         }
+        if (diff != null) {
+            current.add(diff);
+        }
+
+        maxEndSecond.set(Math.max(interval.getEnd(), maxEndSecond.get())); // update max end
     }
 
     public void start() {

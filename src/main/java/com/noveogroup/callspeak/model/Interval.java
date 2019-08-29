@@ -37,8 +37,8 @@ public class Interval {
         if (!isIntersect(interval)) {
             return;
         }
-        this.start = interval.start > this.start ? interval.start : this.start;
-        this.end = interval.end < this.end ? interval.end : this.end;
+        this.start = Math.max(interval.start, this.start);
+        this.end = Math.min(interval.end, this.end);
         this.amount = interval.amount + this.amount;
     }
 
