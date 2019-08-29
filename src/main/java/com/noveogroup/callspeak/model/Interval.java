@@ -43,7 +43,7 @@ public class Interval {
     }
 
     /**
-     * Creates new interval instance with right non-intersected part.
+     * Creates new interval instance with right non-intersected part, started from next second.
      * New interval has calls amount from the interval which contains this part.
      * Current interval will not be affected.
      * @param interval second interval
@@ -70,7 +70,8 @@ public class Interval {
     }
 
     /**
-     * Splits current interval with the point (second) and creates new interval with right part.
+     * Splits current interval with the point (second) and creates new interval with right part,
+     * started from next second.
      * New interval has calls amount similar to current interval.
      * Current interval will not be affected.
      * @param second to split the interval
