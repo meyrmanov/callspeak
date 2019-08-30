@@ -1,24 +1,23 @@
 package com.noveogroup.callspeak.service.impl;
 
+import com.noveogroup.callspeak.dto.PeakResultDTO;
 import com.noveogroup.callspeak.model.Interval;
 import com.noveogroup.callspeak.service.IntersectionService;
-import org.apache.log4j.Logger;
 
-import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
 
 /**
  * Default implementation of IntersectionService
  */
 public class IntersectionServiceImpl implements IntersectionService {
 
-    private static final Logger LOGGER = Logger.getLogger(IntersectionServiceImpl.class);
-
-    private AtomicInteger max;
-    private AtomicLong maxEndSecond;
-    private Collection<Interval> maxLines;
-    private Collection<Interval> current;
+    private Integer max = 1;
+    private Long maxEndSecond = 0L;
+    private Collection<Interval> maxLines = new HashSet<>();
+    private Collection<Interval> current = new LinkedList<>();
 
     @Override
     public void addInterval(final Interval interval) {
@@ -33,10 +32,10 @@ public class IntersectionServiceImpl implements IntersectionService {
                     }
                     i.intersect(interval); // #2 intersect intervals
                 } else if (i.endsBefore(interval)) { // if active interval does not intersect new and it ends before
-                    if (i.getAmount() >= max.get()) { // if calls amount >= previous max, we save it
-                        if (i.getAmount() > max.get()) {
+                    if (i.getAmount() >= max) { // if calls amount >= previous max, we save it
+                        if (i.getAmount() > max) {
                             maxLines.clear(); // clean old intervals (candidates for peaks)
-                            max.set(i.getAmount());
+                            max = i.getAmount();
                         }
                         maxLines.add(i);
                     }
@@ -48,40 +47,27 @@ public class IntersectionServiceImpl implements IntersectionService {
         }
 
         if (diff == null) { // if no right part is calculated, this means new interval ends after all
-            diff = interval.rightDiff(maxEndSecond.get()); // create new interval from previous max end to this end
+            diff = interval.rightDiff(maxEndSecond); // create new interval from previous max end to this end
         }
         if (diff != null) {
             current.add(diff);
         }
 
-        maxEndSecond.set(Math.max(interval.getEnd(), maxEndSecond.get())); // update max end
+        maxEndSecond = Math.max(interval.getEnd(), maxEndSecond); // update max end
     }
 
-    public void start() {
-        max = new AtomicInteger(1);
-        maxEndSecond = new AtomicLong(0);
-        maxLines = new HashSet<>();
-        current = new LinkedList<>();
-        LOGGER.info("Intersection calculation started!");
-    }
-
-    public void finish() {
-        current.stream().filter(i -> i.getAmount() >= max.get()).forEach(i -> {
-            if (i.getAmount() > max.get()) { // find any active intervals with amount >= current max
-                max.set(i.getAmount());
-                maxLines.clear();
+    public PeakResultDTO getPeakResult() {
+        Collection<Interval> resultPeaks = new LinkedList<>(maxLines);
+        int initialMax = max;
+        current.stream().filter(i -> i.getAmount() >= max).forEach(i -> {
+            if (i.getAmount() > max) { // find any active intervals with amount >= current max
+                max = i.getAmount();
+                resultPeaks.clear();
             }
-            maxLines.add(i);
+            resultPeaks.add(i);
         });
-        current.clear();
-        LOGGER.info("Intersection calculation finished!");
-    }
-
-    public Collection<Interval> getPeaks() {
-        return maxLines;
-    }
-
-    public int getPeakAmount() {
-        return max.get();
+        PeakResultDTO result = new PeakResultDTO(resultPeaks, max);
+        max = initialMax;
+        return result;
     }
 }

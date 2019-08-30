@@ -21,7 +21,7 @@ public class CallsFileServiceImpl implements CallsFileService {
     private static final String INTERVAL_DELIMITER = ":";
 
     public void iterateLines(final String fileName, final Consumer<Interval> function) throws CallsFileException {
-        try (Stream<Interval> stream = Files.lines(Paths.get(fileName)).sorted().map(this::parseLine)) {
+        try (Stream<Interval> stream = Files.lines(Paths.get(fileName)).map(this::parseLine)) {
             stream.forEach(function);
         } catch (IOException e) {
             LOGGER.error("Couldn't read from file!");

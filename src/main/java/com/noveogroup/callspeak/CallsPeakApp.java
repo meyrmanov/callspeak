@@ -25,14 +25,13 @@ public final class CallsPeakApp {
         CallsFileService fileService = new CallsFileServiceImpl();
         IntersectionService intersectionService = new IntersectionServiceImpl();
         OutputService outputService = new OutputServiceImpl();
-        intersectionService.start();
+        LOGGER.info("Intersection calculation started!");
         try {
             fileService.iterateLines(args[0], intersectionService::addInterval);
         } catch (CallsFileException e) {
             System.exit(1);
         }
-        intersectionService.finish();
-        outputService.print(intersectionService.getPeaks(), intersectionService.getPeakAmount());
+        outputService.print(intersectionService.getPeakResult());
     }
 
     private CallsPeakApp() {

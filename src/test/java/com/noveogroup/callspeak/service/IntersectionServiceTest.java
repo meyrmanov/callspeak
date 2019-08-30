@@ -1,6 +1,8 @@
 package com.noveogroup.callspeak.service;
 
 import static org.junit.jupiter.api.Assertions.*;
+
+import com.noveogroup.callspeak.dto.PeakResultDTO;
 import com.noveogroup.callspeak.model.Interval;
 import com.noveogroup.callspeak.service.impl.IntersectionServiceImpl;
 import org.junit.jupiter.api.Test;
@@ -19,14 +21,13 @@ public class IntersectionServiceTest {
         intervals.add(new Interval(7, 12));
         intervals.add(new Interval(8, 11));
         IntersectionService service = new IntersectionServiceImpl();
-        service.start();
         intervals.forEach(service::addInterval);
-        service.finish();
 
-        assertEquals(3, service.getPeakAmount());
-        assertEquals(1, service.getPeaks().size());
+        PeakResultDTO resultDTO = service.getPeakResult();
+        assertEquals(3, resultDTO.getMax());
+        assertEquals(1, resultDTO.getPeaks().size());
 
-        Interval res = service.getPeaks().iterator().next();
+        Interval res = resultDTO.getPeaks().iterator().next();
         assertEquals(8, res.getStart());
         assertEquals(9, res.getEnd());
         assertEquals(3, res.getAmount());
