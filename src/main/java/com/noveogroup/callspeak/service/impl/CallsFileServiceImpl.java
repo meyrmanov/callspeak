@@ -5,9 +5,6 @@ import com.noveogroup.callspeak.model.Interval;
 import com.noveogroup.callspeak.service.CallsFileService;
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -20,12 +17,9 @@ public class CallsFileServiceImpl implements CallsFileService {
 
     private static final String INTERVAL_DELIMITER = ":";
 
-    public void iterateLines(final String fileName, final Consumer<Interval> function) throws CallsFileException {
-        try (Stream<Interval> stream = Files.lines(Paths.get(fileName)).map(this::parseLine)) {
-            stream.forEach(function);
-        } catch (IOException e) {
-            LOGGER.error("Couldn't read from file!");
-            throw new CallsFileException();
+    public void iterateLines(final Stream<String> stream, final Consumer<Interval> function) throws CallsFileException {
+        try {
+            stream.map(this::parseLine).forEach(function);
         } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
             LOGGER.error("File format is not correct!");
             throw new CallsFileException();

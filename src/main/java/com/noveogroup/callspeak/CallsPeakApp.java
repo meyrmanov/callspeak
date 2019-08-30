@@ -9,6 +9,11 @@ import com.noveogroup.callspeak.service.impl.IntersectionServiceImpl;
 import com.noveogroup.callspeak.service.impl.OutputServiceImpl;
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.stream.Stream;
+
 /**
  * Main class of the application
  */
@@ -25,10 +30,14 @@ public final class CallsPeakApp {
         CallsFileService fileService = new CallsFileServiceImpl();
         IntersectionService intersectionService = new IntersectionServiceImpl();
         OutputService outputService = new OutputServiceImpl();
+
         LOGGER.info("Intersection calculation started!");
-        try {
-            fileService.iterateLines(args[0], intersectionService::addInterval);
+        try (Stream<String> stream = Files.lines(Paths.get(args[0]))) {
+            fileService.iterateLines(stream, intersectionService::addInterval);
         } catch (CallsFileException e) {
+            System.exit(1);
+        } catch (IOException e) {
+            LOGGER.error("Couldn't read from file!");
             System.exit(1);
         }
         outputService.print(intersectionService.getPeakResult());
